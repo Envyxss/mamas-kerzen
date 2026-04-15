@@ -28,6 +28,8 @@ interface Props {
   shopLink: string
 }
 
+
+
 // These codes are "first order only"
 const FIRST_ORDER_CODES: Record<string, number> = {
   MAMA10: 0.10,
@@ -53,13 +55,14 @@ function markCodeUsed(code: string) {
   } catch {}
 }
 
-export default function CartPageClient({ dict, shopLink }: Props) {
+export default function CartPageClient({ lang, dict, shopLink }: Props) {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
   const [code, setCode] = useState('')
   const [appliedCode, setAppliedCode] = useState('')
   const [discountRate, setDiscountRate] = useState(0)
   const [codeStatus, setCodeStatus] = useState<'idle' | 'applied' | 'invalid' | 'used'>('idle')
   const [usedCodes, setUsedCodes] = useState<string[]>([])
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   useEffect(() => {
     setUsedCodes(getUsedCodes())
@@ -88,13 +91,35 @@ export default function CartPageClient({ dict, shopLink }: Props) {
     setCodeStatus('applied')
   }
 
-  function handleCheckout() {
-    // Mark first-order code as used when checking out
+  async function handleCheckout() {
     if (appliedCode && FIRST_ORDER_CODES[appliedCode]) {
       markCodeUsed(appliedCode)
       setUsedCodes(getUsedCodes())
     }
-    // In production: redirect to real checkout here
+    setCheckoutLoading(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lang,
+          items: items.map(item => ({
+            name: item.name,
+            price: item.price * (1 - discountRate),
+            quantity: item.quantity,
+          })),
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        clearCart()
+        window.location.href = data.url
+      }
+    } catch {
+      alert('Fehler beim Checkout. Bitte versuche es erneut.')
+    } finally {
+      setCheckoutLoading(false)
+    }
   }
 
   const discount = totalPrice * discountRate
@@ -221,10 +246,11 @@ export default function CartPageClient({ dict, shopLink }: Props) {
         </div>
         <button
           onClick={handleCheckout}
-          className="w-full text-white font-semibold py-3 rounded-[16px] transition-colors text-base mb-3"
+          disabled={checkoutLoading}
+          className="w-full text-white font-semibold py-3 rounded-[16px] transition-colors text-base mb-3 disabled:opacity-60"
           style={{ background: 'var(--terra)' }}
         >
-          {dict.checkout}
+          {checkoutLoading ? '⏳ Weiterleitung...' : dict.checkout}
         </button>
         <p className="text-xs text-center" style={{ color: 'var(--footer-faint)' }}>{dict.checkout_note}</p>
       </div>

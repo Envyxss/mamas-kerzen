@@ -9,12 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^9.2.0",
     "@vercel/analytics": "^2.0.1",
     "next": "16.2.3",
     "next-intl": "^4.9.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "resend": "^6.11.0"
+    "resend": "^6.11.0",
+    "stripe": "^22.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
