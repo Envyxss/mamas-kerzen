@@ -98,9 +98,15 @@ export default async function LangLayout({ children, params }: LayoutProps<'/[la
               </nav>
             </div>
             <div className="w-full h-px mb-6" style={{ background: 'var(--footer-line)' }} />
-            <p className="text-xs" style={{ color: 'var(--footer-faint)', fontFamily: 'var(--font-body)' }}>
-              © {new Date().getFullYear()} Mamas Kerzen &nbsp;·&nbsp; {dict.footer.rights}
-            </p>
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <p className="text-xs" style={{ color: 'var(--footer-faint)', fontFamily: 'var(--font-body)' }}>
+                © {new Date().getFullYear()} Mamas Kerzen &nbsp;·&nbsp; {dict.footer.rights}
+              </p>
+              <div className="flex gap-4 text-xs" style={{ fontFamily: 'var(--font-body)' }}>
+                <a href={`/${lang}/impressum`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">Impressum</a>
+                <a href={`/${lang}/datenschutz`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">Datenschutz</a>
+              </div>
+            </div>
           </div>
         </footer>
         <CookieBanner
