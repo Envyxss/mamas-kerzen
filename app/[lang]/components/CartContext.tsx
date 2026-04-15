@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { products } from '../../data/products'
 
 export interface CartItem {
   id: number
@@ -9,6 +10,15 @@ export interface CartItem {
   price: number
   emoji: string
   quantity: number
+}
+
+export function getTranslatedCartItems(items: CartItem[], lang: string): CartItem[] {
+  return items.map(item => {
+    const product = products.find(p => p.slug === item.slug)
+    if (!product) return item
+    const locale = (lang === 'de' || lang === 'en' || lang === 'ru') ? lang : 'de'
+    return { ...item, name: product.translations[locale].name }
+  })
 }
 
 interface CartContextType {

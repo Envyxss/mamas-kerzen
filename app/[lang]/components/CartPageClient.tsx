@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useCart } from './CartContext'
+import { useCart, getTranslatedCartItems } from './CartContext'
 
 interface CartDict {
   title: string
@@ -56,7 +56,8 @@ function markCodeUsed(code: string) {
 }
 
 export default function CartPageClient({ lang, dict, shopLink }: Props) {
-  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const { items: rawItems, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const items = getTranslatedCartItems(rawItems, lang)
   const [code, setCode] = useState('')
   const [appliedCode, setAppliedCode] = useState('')
   const [discountRate, setDiscountRate] = useState(0)

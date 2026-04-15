@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useCart } from './CartContext'
+import { useCart, getTranslatedCartItems } from './CartContext'
 import { CheckIcon } from './Icons'
 
 const VALID_CODES: Record<string, number> = { MAMA10: 0.10, FIRST10: 0.10 }
@@ -41,7 +41,8 @@ export function openCartDrawer() {
 }
 
 export default function CartDrawer({ lang, cartLabel, emptyLabel, shopLabel, removeLabel, totalLabel, checkoutLabel, checkoutNote, discountPlaceholder, discountApply, discountApplied, discountInvalid, discountUsed, subtotalLabel, discountLabel }: Props) {
-  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const { items: rawItems, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const items = getTranslatedCartItems(rawItems, lang)
   const [open, setOpen] = useState(false)
   const [code, setCode] = useState('')
   const [appliedCode, setAppliedCode] = useState('')
