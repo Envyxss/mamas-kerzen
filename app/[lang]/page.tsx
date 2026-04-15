@@ -34,7 +34,7 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
         <div className="max-w-5xl mx-auto px-4 sm:px-8">
           <p className="hero-eyebrow text-xs font-medium uppercase tracking-widest mb-6"
             style={{ color: 'var(--terra)', fontFamily: 'var(--font-body)' }}>
-            Mamas Kerzen &nbsp;·&nbsp; München &nbsp;·&nbsp; Handgemacht
+            Mamas Kerzen &nbsp;·&nbsp; Aachen &nbsp;·&nbsp; Handgemacht
           </p>
 
           <h1 className="hero-title mb-5"
