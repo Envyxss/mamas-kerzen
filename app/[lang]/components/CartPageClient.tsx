@@ -63,6 +63,7 @@ export default function CartPageClient({ lang, dict, shopLink }: Props) {
   const [codeStatus, setCodeStatus] = useState<'idle' | 'applied' | 'invalid' | 'used'>('idle')
   const [usedCodes, setUsedCodes] = useState<string[]>([])
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
 
   useEffect(() => {
     setUsedCodes(getUsedCodes())
@@ -97,6 +98,7 @@ export default function CartPageClient({ lang, dict, shopLink }: Props) {
       setUsedCodes(getUsedCodes())
     }
     setCheckoutLoading(true)
+    setCheckoutError('')
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -114,9 +116,12 @@ export default function CartPageClient({ lang, dict, shopLink }: Props) {
       if (data.url) {
         clearCart()
         window.location.href = data.url
+      } else {
+        setCheckoutError('Checkout fehlgeschlagen: ' + (data.error ?? 'Unbekannter Fehler'))
       }
-    } catch {
-      alert('Fehler beim Checkout. Bitte versuche es erneut.')
+    } catch (e) {
+      setCheckoutError('Netzwerkfehler. Bitte versuche es erneut.')
+      console.error(e)
     } finally {
       setCheckoutLoading(false)
     }
@@ -253,6 +258,9 @@ export default function CartPageClient({ lang, dict, shopLink }: Props) {
           {checkoutLoading ? '⏳ Weiterleitung...' : dict.checkout}
         </button>
         <p className="text-xs text-center" style={{ color: 'var(--footer-faint)' }}>{dict.checkout_note}</p>
+        {checkoutError && (
+          <p className="text-xs text-center mt-2 font-medium" style={{ color: '#e87654' }}>{checkoutError}</p>
+        )}
       </div>
     </div>
   )
