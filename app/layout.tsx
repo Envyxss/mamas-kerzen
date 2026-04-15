@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Mamas Kerzen",
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col" style={{ background: 'var(--bg-page)', color: 'var(--text)' }}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
