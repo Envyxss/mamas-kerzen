@@ -48,6 +48,8 @@ export default function CartDrawer({ lang, cartLabel, emptyLabel, shopLabel, rem
   const [discountRate, setDiscountRate] = useState(0)
   const [codeStatus, setCodeStatus] = useState<'idle' | 'applied' | 'invalid' | 'used'>('idle')
   const [usedCodes, setUsedCodes] = useState<string[]>([])
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
 
   useEffect(() => {
     setUsedCodes(getUsedCodes())
@@ -70,13 +72,40 @@ export default function CartDrawer({ lang, cartLabel, emptyLabel, shopLabel, rem
     setDiscountRate(rate); setAppliedCode(upper); setCodeStatus('applied')
   }
 
-  function handleCheckout() {
+  async function handleCheckout() {
     if (appliedCode && VALID_CODES[appliedCode]) {
       const used = getUsedCodes()
       if (!used.includes(appliedCode)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify([...used, appliedCode]))
         setUsedCodes([...used, appliedCode])
       }
+    }
+    setCheckoutLoading(true)
+    setCheckoutError('')
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lang,
+          items: items.map(item => ({
+            name: item.name,
+            price: item.price * (1 - discountRate),
+            quantity: item.quantity,
+          })),
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        clearCart()
+        window.location.href = data.url
+      } else {
+        setCheckoutError('Fehler: ' + (data.error ?? 'Unbekannt'))
+      }
+    } catch {
+      setCheckoutError('Netzwerkfehler. Bitte erneut versuchen.')
+    } finally {
+      setCheckoutLoading(false)
     }
   }
 
@@ -243,11 +272,15 @@ export default function CartDrawer({ lang, cartLabel, emptyLabel, shopLabel, rem
                 </div>
                 <button
                   onClick={handleCheckout}
-                  className="btn-press w-full text-white font-semibold py-3 rounded-[12px] text-sm mt-2"
+                  disabled={checkoutLoading}
+                  className="btn-press w-full text-white font-semibold py-3 rounded-[12px] text-sm mt-2 disabled:opacity-60"
                   style={{ background: 'var(--terra)', fontFamily: 'var(--font-body)' }}
                 >
-                  {checkoutLabel}
+                  {checkoutLoading ? '⏳ Weiterleitung...' : checkoutLabel}
                 </button>
+                {checkoutError && (
+                  <p className="text-xs text-center mt-1 font-medium" style={{ color: '#e87654' }}>{checkoutError}</p>
+                )}
                 <p className="text-xs text-center pt-1" style={{ color: 'var(--footer-faint)', fontFamily: 'var(--font-body)' }}>
                   {checkoutNote}
                 </p>
