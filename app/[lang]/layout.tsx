@@ -105,6 +105,8 @@ export default async function LangLayout({ children, params }: LayoutProps<'/[la
               <div className="flex gap-4 text-xs" style={{ fontFamily: 'var(--font-body)' }}>
                 <a href={`/${lang}/impressum`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">Impressum</a>
                 <a href={`/${lang}/datenschutz`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">Datenschutz</a>
+                <a href={`/${lang}/agb`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">AGB</a>
+                <a href={`/${lang}/widerruf`} style={{ color: 'var(--footer-faint)' }} className="hover:opacity-70 transition-opacity">Widerruf</a>
               </div>
             </div>
           </div>
